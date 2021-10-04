@@ -4,7 +4,7 @@
 
 uint32_t cwMin = 15;
 uint32_t cwMax = 1023;
-uint32_t numRetry = 6;
+uint32_t numRetry = 7;
 uint32_t Ts = 2870;
 uint32_t Tc = Ts;
 uint32_t Te = 9;
@@ -16,9 +16,10 @@ double p(double tau, int32_t n) {
 
 double tau(double p) {
     double val = 0;
-    double f = (1 - pow(p, numRetry + 1)) / (1 - p);
+    double f = 0;
     double tmp = 1;
     for (size_t i = 0; i < numRetry; i++, tmp *= p) {
+        f += tmp;
         uint32_t wi = (cwMin + 1) << i;
         if (wi > (cwMax + 1)) {
             wi = cwMax + 1;
@@ -69,6 +70,9 @@ int main() {
         double pc = 1 - pe - ps;
         double Tavg = Te * pe + Ts * ps + Tc * pc;
         double S = (L * ps) / Tavg;
+        if (n == 1) {
+            S = L / (Ts + (cwMin / 2.0) * Te);
+        }
         std::cout << S * 8 << " Mbit/s" <<  std::endl;
     }
     return 0;
